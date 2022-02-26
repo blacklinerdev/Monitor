@@ -1,0 +1,4 @@
+#ignore property files
+**.properties
+**queries
+/src/test/java/
