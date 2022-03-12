@@ -1,1 +1,5 @@
 de/blacklinerdev/monitor/Monitor.class
+de/blacklinerdev/monitor/manager/Controller.class
+de/blacklinerdev/monitor/manager/ExamManager.class
+de/blacklinerdev/monitor/manager/Exams.class
+de/blacklinerdev/monitor/Exam.class

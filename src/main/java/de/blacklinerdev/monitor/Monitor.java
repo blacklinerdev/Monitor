@@ -10,11 +10,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalTime;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Monitor {
 
@@ -36,14 +36,13 @@ public class Monitor {
             System.exit(1);
             
         }
-        System.out.println(this.exams.toString());
     }
 
     public static void main(String[] args) {
         Monitor monitor;
         try {
             monitor = new Monitor();
-            List<Boolean> result = monitor.run();
+            Map<String, Boolean> result = monitor.run();
             monitor.print(result);
         } catch (IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
@@ -52,8 +51,8 @@ public class Monitor {
 
     }
 
-    private List<Boolean> run() throws ClassNotFoundException, SQLException {
-        List<Boolean> results = new ArrayList();
+    private Map<String, Boolean> run() throws ClassNotFoundException, SQLException {
+        Map<String, Boolean> results = new HashMap();
         String url = props.getProperty("url");
         String dbuser = props.getProperty("dbuser");
         String dbpasswd = props.getProperty("dbpasswd");
@@ -64,15 +63,20 @@ public class Monitor {
             ResultSet rs = stmt.executeQuery(e.getQuery());
             while (rs.next()) {
                 LocalTime time = rs.getTime("letztes Update").toLocalTime();
-                results.add(time.isAfter(LocalTime.now().minusMinutes(e.getIntervall())));
+                results.put(e.getServiceName(), time.isAfter(LocalTime.now().minusMinutes(e.getIntervall())));
             }
         }
         return results;
     }
 
-    private void print(List<Boolean> result) {
-        for (Boolean b : result) {
-            System.out.println(b);
+    private void print(Map<String, Boolean> result) {
+        
+        for (Entry<String, Boolean> entry : result.entrySet()) {
+            if(entry.getValue()){
+                System.out.println(entry.getKey() + ": running");
+            }else{
+                System.out.println(entry.getKey() + ": not running");
+            }
         }
         int services = exams.size();
         int up = getRunningAmount(result);
@@ -82,9 +86,9 @@ public class Monitor {
         }
     }
 
-    private int getRunningAmount(List<Boolean> list) {
+    private int getRunningAmount(Map<String, Boolean> map) {
         int running = 0;
-        for (Boolean b : list) {
+        for (Boolean b : map.values()) {
             if (b) {
                 running++;
             }
