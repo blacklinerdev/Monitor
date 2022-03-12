@@ -36,6 +36,7 @@ public class Monitor {
             System.exit(1);
             
         }
+        System.out.println(this.exams.toString());
     }
 
     public static void main(String[] args) {
@@ -45,7 +46,7 @@ public class Monitor {
             List<Boolean> result = monitor.run();
             monitor.print(result);
         } catch (IOException | ClassNotFoundException | SQLException e) {
-            Logger.getGlobal().log(Level.SEVERE, e.getLocalizedMessage());
+            e.printStackTrace();
             System.exit(0);
         }
 
@@ -62,7 +63,7 @@ public class Monitor {
         for (Exam e : exams) {
             ResultSet rs = stmt.executeQuery(e.getQuery());
             while (rs.next()) {
-                LocalTime time = rs.getTime(e.getResultName()).toLocalTime();
+                LocalTime time = rs.getTime("letztes Update").toLocalTime();
                 results.add(time.isAfter(LocalTime.now().minusMinutes(e.getIntervall())));
             }
         }

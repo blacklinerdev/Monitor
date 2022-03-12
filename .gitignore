@@ -1,5 +1,7 @@
 #ignore property files
 **.properties
 **queries
-/src/test/java/
 **exams
+exams
+*exams
+src/main/java/de/blacklinerdev/monitor/exams
